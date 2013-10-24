@@ -403,4 +403,6 @@ public interface DataStorage {
   public String getActivityIdForOwner(String ownerId, String type);
 
   public String getActivityIdForOwner(String ownerPath);
+
+  void saveUserPrivateOfCategory(String categoryId, String priInfo);
 }

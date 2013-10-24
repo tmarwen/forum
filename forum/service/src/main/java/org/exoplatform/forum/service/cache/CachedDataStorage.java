@@ -1569,4 +1569,9 @@ public class CachedDataStorage implements DataStorage, Startable {
     return storage.topicHasPoll(topicPath);
   }
 
+  @Override
+  public void saveUserPrivateOfCategory(String categoryId, String priInfo) {
+    storage.saveUserPrivateOfCategory(categoryId, priInfo);
+  }
+
 }
