@@ -51,6 +51,7 @@
             </field>
           </object>
         </object-param>
+<!--
         <object-param profiles="cluster">
           <name>forum.UserProfiles</name>
           <description></description>
@@ -72,7 +73,7 @@
             </field>
           </object>
         </object-param> 
-
+-->
         <!-- Categories -->
         <object-param>
           <name>forum.CategoryData</name>
