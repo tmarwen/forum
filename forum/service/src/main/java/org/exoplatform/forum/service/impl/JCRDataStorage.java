@@ -913,6 +913,20 @@ public class JCRDataStorage implements DataStorage, ForumNodeTypes {
       throw e;
     }
   }
+  @Override
+  public void saveUserPrivateOfCategory(String categoryId, String priInfo) {
+      SessionProvider sProvider = CommonUtils.createSystemProvider();
+      try {
+          Node cateHome = getCategoryHome(sProvider);
+          Node cateNode = cateHome.getNode(categoryId);
+          Set<String> privates = new HashSet<String>(new PropertyReader(cateNode).list(EXO_USER_PRIVATE, new ArrayList<String>()));
+          privates.add(priInfo);
+          cateNode.setProperty(EXO_USER_PRIVATE, privates.toArray(new String[privates.size()]));
+          cateHome.getSession().save();
+      } catch (Exception e) {
+          log.error("Failed to save user private of category", e);
+      }
+  }
 
   public void saveModOfCategory(List<String> moderatorCate, String userId, boolean isAdd) {
     SessionProvider sProvider = CommonUtils.createSystemProvider();

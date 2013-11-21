@@ -423,6 +423,8 @@ public interface DataStorage {
 
   public String getActivityIdForOwner(String ownerPath);
 
+  public  void saveUserPrivateOfCategory(String categoryId, String priInfo);
+
   public List<ForumSearchResult> getUnifiedSearch(String textQuery, String userId, Integer offset, Integer limit, String sort, String order) throws Exception;
   
   public List<String> getForumUserCanView(List<String> listOfUser, List<String> listForumIds) throws Exception ;
