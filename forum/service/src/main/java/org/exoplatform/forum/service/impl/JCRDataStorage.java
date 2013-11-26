@@ -112,7 +112,6 @@ import org.exoplatform.forum.service.conf.CategoryData;
 import org.exoplatform.forum.service.conf.ForumData;
 import org.exoplatform.forum.service.conf.ForumInitialDataPlugin;
 import org.exoplatform.forum.service.conf.PostData;
-import org.exoplatform.forum.service.conf.StatisticEventListener;
 import org.exoplatform.forum.service.conf.TopicData;
 import org.exoplatform.forum.service.conf.UpdateUserProfileJob;
 import org.exoplatform.forum.service.filter.model.CategoryFilter;
