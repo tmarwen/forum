@@ -3167,9 +3167,8 @@ public class JCRDataStorage implements DataStorage, ForumNodeTypes {
   private String makePostsSQLQuery(PostFilter filter, boolean hasOrder) throws Exception {
     String topicPath = filter.getTopicPath();
     if(Utils.isEmpty(topicPath)) {
-      topicPath = new StringBuffer("/"+dataLocator.getForumCategoriesLocation())
-        .append("/").append(filter.getCategoryId()).append("/")
-        .append(filter.getForumId()).append("/").append(filter.getTopicId()).toString();
+        topicPath = new StringBuffer("/").append(dataLocator.getForumCategoriesLocation()).append("/").append(filter.getCategoryId())
+                .append("/").append(filter.getForumId()).append("/").append(filter.getTopicId()).toString();
     }
 
     StringBuilder strBuilder = jcrPathLikeAndNotLike(EXO_POST, topicPath);
