@@ -38,7 +38,6 @@ import org.exoplatform.forum.common.UserHelper;
 import org.exoplatform.forum.common.webui.BaseEventListener;
 import org.exoplatform.forum.common.webui.UIPopupAction;
 import org.exoplatform.forum.common.webui.UIPopupContainer;
-import org.exoplatform.forum.common.webui.WebUIUtils;
 import org.exoplatform.forum.service.ForumService;
 import org.exoplatform.forum.service.MessageBuilder;
 import org.exoplatform.forum.service.Topic;
@@ -57,10 +56,11 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+import org.exoplatform.webui.form.UIFormRichtextInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.webui.form.wysiwyg.UIFormWYSIWYGInput;
+
 
 
 @ComponentConfig(lifecycle = UIFormLifecycle.class, 
@@ -102,7 +102,7 @@ public class UIQuestionForm extends BaseUIFAQForm implements UIPopupComponent {
 
   private UIFormStringInput              inputQuestionContent = null;
 
-  private UIFormWYSIWYGInput             inputQuestionDetail  = null;
+  private UIFormRichtextInput             inputQuestionDetail  = null;
 
   private UIFormSelectBox                selectLanguage       = null;
 
@@ -259,9 +259,9 @@ public class UIQuestionForm extends BaseUIFAQForm implements UIPopupComponent {
       log.error("Set Attachcments in to InputActachcment is fall, exception: " + e.getMessage());
     }
 
-    inputQuestionDetail = new UIFormWYSIWYGInput(QUESTION_DETAIL, QUESTION_DETAIL, "");
-    inputQuestionDetail.setFCKConfig(WebUIUtils.getFCKConfig());
-    inputQuestionDetail.setToolBarName("Basic");
+    inputQuestionDetail = new UIFormRichtextInput(QUESTION_DETAIL, QUESTION_DETAIL, "");
+    inputQuestionDetail.setToolbar(UIFormRichtextInput.FAQ_TOOLBAR);
+    inputQuestionDetail.setIsPasteAsPlainText(true);
     if (!questionContents_.isEmpty()) {
       String input = questionContents_.get(0);
       if (input != null && input.indexOf("<p>") >= 0 && input.indexOf("</p>") >= 0) {
@@ -661,7 +661,7 @@ public class UIQuestionForm extends BaseUIFAQForm implements UIPopupComponent {
         if (!isNew && question.getPath().equals(questions.viewingQuestionId_)) {
           questions.updateLanguageMap();
         }
-        event.getRequestContext().addUIComponentToUpdateByAjax(questions.getAncestorOfType(UIAnswersContainer.class));
+        event.getRequestContext().addUIComponentToUpdateByAjax(questions.getAncestorOfType(UIAnswersPortlet.class));
       } catch (Exception e) {
         questionForm.log.debug("Failed to save action creating question.", e);
       }

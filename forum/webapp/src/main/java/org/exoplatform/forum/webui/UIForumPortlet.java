@@ -522,13 +522,14 @@ public class UIForumPortlet extends UIPortletApplication {
     return ForumUtils.EMPTY_STR;
   }
 
-  protected void initSendNotification() {
+  protected void initSendNotification() throws Exception {
     if(getUserProfile().getUserRole() <=2 ) {
+      String postLink = ForumUtils.createdSubForumLink(Utils.TOPIC, "topicID", false);
       StringBuilder init = new StringBuilder("forumNotify.init('");
       init.append(getId()).append("', '")
           .append(userProfile.getUserId()).append("', '")
           .append(getUserToken()).append("', '")
-          .append(getCometdContextName()).append("');");
+          .append(getCometdContextName()).append("'); forumNotify.setPostLink('").append(postLink).append("');");
       StringBuilder initParam = new StringBuilder("forumNotify.initParam('");
       initParam.append(WebUIUtils.getLabel(getId(), "Notification")).append("', '")
                .append(WebUIUtils.getLabel(getId(), "message")).append("', '")
@@ -536,7 +537,9 @@ public class UIForumPortlet extends UIPortletApplication {
                .append(WebUIUtils.getLabel(getId(), "titeName")).append("', '")
                .append(WebUIUtils.getLabel(getId(), "from")).append("', '")
                .append(WebUIUtils.getLabel(getId(), "briefContent")).append("', '")
-               .append(WebUIUtils.getLabel(getId(), "GoDirectly")).append("');");
+               .append(WebUIUtils.getLabel(getId(), "GoDirectly")).append("', '")
+               .append(WebUIUtils.getLabel(getId(), "ClickHere")).append("', '")
+               .append(WebUIUtils.getLabel(getId(), "Title")).append("');");
       ForumUtils.addScripts("ForumSendNotification", "forumNotify", new String[] { initParam.toString(), init.toString() });
     }
   }
@@ -611,6 +614,17 @@ public class UIForumPortlet extends UIPortletApplication {
   }
 
   public boolean checkCanView(Category cate, Forum forum, Topic topic) throws Exception {
+    // check category scoping
+    if(invisibleCategories != null && invisibleCategories.isEmpty() == false 
+        && invisibleCategories.contains(cate.getId()) == false) {
+      return false;
+    }
+    // check forum scoping
+    if(forum != null && invisibleForums != null && invisibleForums.isEmpty() == false 
+        && invisibleForums.contains(forum.getId()) == false) {
+      return false;
+    }
+    //
     if (getUserProfile().getUserRole() == 0)
       return true;
     List<String> userBound = UserHelper.getAllGroupAndMembershipOfUser(null);
@@ -652,7 +666,6 @@ public class UIForumPortlet extends UIPortletApplication {
     } else if (path.indexOf(ForumUtils.FIELD_SEARCHFORUM_LABEL) >= 0) {
       updateIsRendered(ForumUtils.FIELD_SEARCHFORUM_LABEL);
       UISearchForm searchForm = getChild(UISearchForm.class);
-      searchForm.setUserProfile(getUserProfile());
       searchForm.setPath(ForumUtils.EMPTY_STR);
       searchForm.setSelectType(path.replaceFirst(ForumUtils.FIELD_SEARCHFORUM_LABEL, ""));
       searchForm.setSearchOptionsObjectType(ForumUtils.EMPTY_STR);
@@ -734,18 +747,21 @@ public class UIForumPortlet extends UIPortletApplication {
                   boolean isMod = ForumServiceUtils.hasPermission(forum.getModerators(), this.userProfile.getUserId());
                   postForm.setPostIds(id[0], id[1], topic.getId(), topic);
                   postForm.setMod(isMod);
+                  Post post = this.forumService.getPost(id[0], id[1], topic.getId(), postId);
                   if (isQuote) {
-                    // uiTopicDetail.setLastPostId(postId) ;
-                    Post post = this.forumService.getPost(id[0], id[1], topic.getId(), postId);
                     if (post != null) {
-                      postForm.updatePost(postId, true, false, post);
+                      postForm.updatePost(postId, true, (post.getUserPrivate().length == 2), post);
                       popupContainer.setId("UIQuoteContainer");
                     } else {
                       showWarningMessage(context, "UIBreadcumbs.msg.post-no-longer-exist", ForumUtils.EMPTY_STR);
                       uiTopicDetail.setIdPostView("normal");
                     }
                   } else {
-                    postForm.updatePost(ForumUtils.EMPTY_STR, false, false, null);
+                    if (post != null && post.getUserPrivate().length == 2) {
+                      postForm.updatePost(post.getId(), false, true, post);
+                    } else {
+                      postForm.updatePost(ForumUtils.EMPTY_STR, false, false, null);
+                    }
                     popupContainer.setId("UIAddPostContainer");
                   }
                   popupAction.activate(popupContainer, 900, 500);
@@ -946,17 +962,16 @@ public class UIForumPortlet extends UIPortletApplication {
   static public class ViewPublicUserInfoActionListener extends EventListener<UIForumPortlet> {
     public void execute(Event<UIForumPortlet> event) throws Exception {
       UIForumPortlet forumPortlet = event.getSource();
-      String userId = event.getRequestContext().getRequestParameter(OBJECTID);
+      String userId = event.getRequestContext().getRequestParameter(OBJECTID).trim();
       UIPopupAction popupAction = forumPortlet.getChild(UIPopupAction.class);
       UIViewUserProfile viewUserProfile = popupAction.createUIComponent(UIViewUserProfile.class, null, null);
+      UserProfile selectProfile;
       try {
-        UserProfile selectProfile = forumPortlet.forumService.getUserInformations(forumPortlet.forumService.getQuickProfile(userId.trim()));
-        viewUserProfile.setUserProfileViewer(selectProfile);
+        selectProfile = forumPortlet.forumService.getUserInformations(forumPortlet.forumService.getQuickProfile(userId));
       } catch (Exception e) {
-        log.debug("Fail to set user profile.", e);
-        showWarningMessage(event.getRequestContext(), "UITopicDetail.msg.userIsDeleted", new String[] { userId });
-        return;
+        selectProfile = ForumUtils.getDeletedUserProfile(forumPortlet.forumService, userId);
       }
+      viewUserProfile.setUserProfileViewer(selectProfile);
       popupAction.activate(viewUserProfile, 670, 400, true);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }

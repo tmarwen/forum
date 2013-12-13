@@ -93,6 +93,17 @@
 			}
 	}
 	
+	blockquote {
+		background: none;
+		 border-left: 5px solid #999;
+	    margin: 0 0 20px;
+	    padding: 0 0 0 15px;
+	    width: auto;
+	}
+	blockquote:after {
+		display: none;
+	}
+	
 	// drapdrop categories
 	.uiCategories {
 		.listCategories > li {
@@ -149,6 +160,7 @@
 		}
 		.voteResult {
 			margin: 0px 0 5px 0;
+			float: right;
 			.ratingInfoContainer  {
 				margin :1px 5px 0 0;
 			}
@@ -199,7 +211,7 @@
 				border-top: 1px solid @borderColor;
 			}
 			p {
-				margin: 2px 0;
+				//margin: 2px 0;
 			}
 			.date{
 				color: @grayLight;
@@ -245,16 +257,21 @@
 			.border-radius(0 0 @borderRadiusSmall @borderRadiusSmall);
 		}
 		.questionContent {
-			margin: 6px 0 0 0;
-			.pull-right + .leftQuestionContainer {
-				margin-right: 120px;
-			}
+			margin: 6px 0 0 0;			
 		}
 		.theContent {
 			word-wrap: break-word;
 			ul, ol {
+				padding: 0;
 				margin: 0px 0px 10px 25px;
 			}
+			ul li {
+			    list-style: disc outside none;
+			}
+			ol li {
+			    list-style-type: decimal;
+			}	
+
 		}	
 }
 
@@ -344,3 +361,66 @@
 		}
 	}
 }
+
+/* Content Quote */
+.theContent{
+	.uiWikiPortlet {
+		background: none;
+	}
+	br {
+		display: block;
+		margin-top: 10px;
+	}
+	.contentQuote{
+		font-style: italic;
+		padding: 15px 15px 15px 20px;
+		background: #e6f3ff;
+		margin: 10px 0 0 15px;
+		word-wrap: break-word;
+		.border-radius(2px);
+		.textContent{
+			border-left: none;
+			padding-left: 0;
+			margin-top: 10px;
+			.contentQuote{
+				border-left: solid 5px #aacded;
+				padding: 0px 0px 0px 20px;
+				margin-top: 15px;
+				.titleQuote{
+					line-height: 8px;
+					height: 13px;
+				}
+			}
+			.singleQuote {
+				padding: 5px 0px 5px 20px;
+				margin: 5px 0px;
+			}
+		}
+		.titleQuote{
+			font-weight:bold;
+		}
+	}
+	
+	.textContent {
+		word-wrap: break-word;
+		.contentQuote{
+			font-style: italic;
+			padding-left: 0;
+			margin: 0;
+			.titleQuote{
+				font-weight:bold;
+			}
+		}
+	}
+}
+
+/* Question Container */
+.questionContainer {
+	.theContent {
+		.contentQuote {
+			background: #f8f8f8;
+		}
+	}
+}
+
+
